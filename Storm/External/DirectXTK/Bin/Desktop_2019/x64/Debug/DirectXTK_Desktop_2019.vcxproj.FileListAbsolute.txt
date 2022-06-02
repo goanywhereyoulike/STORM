@@ -1,0 +1,1 @@
+D:\Goanywhere\Storm\External\DirectXTK\Bin\Desktop_2019\x64\Debug\DirectXTK.lib
