@@ -1,0 +1,13 @@
+{
+	"Components": {
+		"TransformComponent": {
+			"Position": [ -20, 0, 50 ],
+			"Rotation": [ 0, 0, 0 ],
+			"Scale": [ 0.1, 0.1, 0.1 ]
+		},
+		"ModelComponent": {
+			"FileName": "../../Assets/Models/City3/city.model"
+
+		}
+	}
+}
