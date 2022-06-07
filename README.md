@@ -8,7 +8,7 @@ Storm engine is a custom game engine using C++ and Direct3D 11.
 - Post-processing effects
 - 3D Models and animations
 
-<div align=center><img src="https://user-images.githubusercontent.com/36040048/172300294-00e07975-7232-4eca-8735-c9de94955e4d.gif" width="1920" height="1080" /></div>
+<div align=center><img src="https://user-images.githubusercontent.com/36040048/172300294-00e07975-7232-4eca-8735-c9de94955e4d.gif" width="1920" height="960" /></div>
 
 ![Gif](https://user-images.githubusercontent.com/36040048/172300309-2b3687af-1dc3-4b25-9c06-126846a37767.gif)
 ![Gif](https://user-images.githubusercontent.com/36040048/172300361-e1a06205-b713-49a6-bcd4-00a8003cfaa0.gif)
