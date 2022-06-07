@@ -1,3 +1,5 @@
+![Storm_logo](https://user-images.githubusercontent.com/36040048/172308414-a64abf7d-32a5-4bb1-9e37-e97d1550abe6.png)
+
 # **STORM**
 ## Overview
 Storm engine is a custom game engine using C++ and Direct3D 11. 
