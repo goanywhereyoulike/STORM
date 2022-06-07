@@ -1,4 +1,4 @@
-![Storm_logo](https://user-images.githubusercontent.com/36040048/172308414-a64abf7d-32a5-4bb1-9e37-e97d1550abe6.png)
+<div align=left><img src="https://user-images.githubusercontent.com/36040048/172308414-a64abf7d-32a5-4bb1-9e37-e97d1550abe6.png" width="1000" height="500" /></div>
 
 # **STORM**
 ## Overview
