@@ -3,10 +3,10 @@
 # **STORM**
 ## Overview
 Storm engine is a custom game engine using C++ and Direct3D 11. 
-The Assets folder is too large to upload to GitHub.
-I uploaded it to google drive, here is the link:
-[Assets Folder](https://drive.google.com/file/d/19fSx-dcxU6OH9VHjf5tlrB7V-UUdjHw9/view?usp=share_link)
-After downloading the project and assets folder, place the Assets folder in the root folder as shown in the image below.
+The Assets folder is too large to upload to GitHub.  
+I uploaded it to google drive, here is the link:  
+[Assets Folder](https://drive.google.com/file/d/19fSx-dcxU6OH9VHjf5tlrB7V-UUdjHw9/view?usp=share_link)  
+After downloading the project and assets folder, place the Assets folder in the root folder as shown in the image below.  
 <div align=left><img src="https://user-images.githubusercontent.com/36040048/202838816-f9516219-f14c-474b-8212-9b966c0772a2.png" width="700" height="500" /></div>
 
 
