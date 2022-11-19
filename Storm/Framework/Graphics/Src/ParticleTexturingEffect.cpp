@@ -2,6 +2,7 @@
 #include "ParticleTexturingEffect.h"
 #include "Camera.h"
 #include "MeshBuilder.h"
+#include "GraphicsSystem.h"
 #include "RenderObject.h"
 #include "VertexTypes.h"
 
@@ -12,7 +13,7 @@ void ParticleTexturingEffect::Initialize()
 {
 	mTexturingVertexShader.Initialize<VertexPCX>(L"../../Assets/Shaders/Particle.fx");
 	mTexturingPixelShader.Initialize(L"../../Assets/Shaders/Particle.fx");
-	mParticleBuffer.Initialize();
+	//mParticleBuffer.Initialize();
 	particleMeshBuffer.Initialize(nullptr,sizeof(VertexPCX),6, true);
 	mSampler.Initialize(Sampler::Filter::Linear, Sampler::AddressMode::Wrap);
 	mBlendstate.Initialize(BlendState::Mode::Additive);
@@ -25,11 +26,9 @@ void ParticleTexturingEffect::Terminate()
 	mDepthStencilState.Terminate();
 	mBlendstate.Terminate();
 	mSampler.Terminate();
-	mParticleBuffer.Terminate();
+	//mParticleBuffer.Terminate();
 	mTexturingPixelShader.Terminate();
 	mTexturingVertexShader.Terminate();
-
-
 }
 
 void ParticleTexturingEffect::Begin()
@@ -37,8 +36,8 @@ void ParticleTexturingEffect::Begin()
 	mTexturingVertexShader.Bind();
 	mTexturingPixelShader.Bind();
 
-	mParticleBuffer.BindVS(0);
-	mParticleBuffer.BindPS(0);
+	//mParticleBuffer.BindVS(0);
+	//mParticleBuffer.BindPS(0);
 
 	mSampler.BindVS(0);
 	mSampler.BindPS(0);
@@ -91,10 +90,10 @@ void ParticleTexturingEffect::RenderParticle(const Particle& particle)
 	//Math::Matrix4 view = mCamera->GetViewMatrix();
 	//Math::Matrix4 proj = mCamera->GetProjectionMatrix();
 	//Math::Matrix4 wvp = Math::Transpose(world * view * proj);
-	color.a = percent;
-	particledata.wvp = wvp;
-	particledata.color = color;
-	mParticleBuffer.Update(particledata);
+	//color.a = percent;
+	//particledata.wvp = wvp;
+	//particledata.color = color;
+	//mParticleBuffer.Update(particledata);
 
 	std::vector<VertexPCX> vertices;
 	const uint32_t vertexCount = 6;

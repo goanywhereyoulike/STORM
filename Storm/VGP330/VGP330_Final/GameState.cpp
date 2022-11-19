@@ -10,8 +10,8 @@ void GameState::Initialize()
 	mPosition = { 0.0f,2.0f,0.0f };
 	mCamera.SetPosition(Vector3{ 0.0f,6.0f,-8.0f });
 	mCamera.SetLookAt(mPosition);
-
-	particlesytem.Initialize();
+	particlepros.textureName = "../../Assets/Images/white.png";
+	particlesytem.Initialize(particlepros);
 	particlesytem.SetCamera(mCamera);
 	mVelocity = { 0.0f,1.0f,0.0f };
 	mAcceleration = { 0.0f,0.0f,0.0f };
@@ -30,7 +30,7 @@ void GameState::Update(float deltaTime)
 
 	auto inputSystem = InputSystem::Get();
 	//Camera control---------------------------------
-	const float movespeed = inputSystem->IsKeyDown(KeyCode::LSHIFT) ? 10.0f : 1.0f;
+	const float movespeed = inputSystem->IsKeyDown(KeyCode::LSHIFT) ? 10.0f : 5.0f;
 	const float turnspeed = 0.3f;
 	if (inputSystem->IsKeyDown(KeyCode::W))
 	{
@@ -69,7 +69,7 @@ void GameState::Update(float deltaTime)
 	}
 
 	particlesytem.SetCamera(mCamera);
-	particlesytem.UpdateParticles(mPaused ? 0.0f : deltaTime);
+	particlesytem.UpdateParticles(mPaused ? 0.0f : deltaTime, particlepros);
 
 }
 
@@ -92,10 +92,13 @@ void GameState::DebugUI()
 		if (ImGui::MenuItem("Load"))
 		{
 			ImGuiFileDialog::Instance()->OpenDialog("LoadFileDlgKey", "Choose File", ".json", ".");
+
 		}
 		if (ImGui::MenuItem("Save"))
 		{
+
 			ImGuiFileDialog::Instance()->OpenDialog("SaveFileDlgKey", "Choose File", nullptr, ".");
+
 		}
 		ImGui::EndMenu();
 	}
@@ -109,7 +112,11 @@ void GameState::DebugUI()
 		{
 			std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
 			std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+
 			particlesytem.LoadParticleProps(filePathName, particlepros);
+			particlesytem.Terminate();
+			particlesytem.Initialize(particlepros);
+			particlesytem.SetCamera(mCamera);
 			// action
 		}
 
@@ -130,37 +137,31 @@ void GameState::DebugUI()
 		// close
 		ImGuiFileDialog::Instance()->Close();
 	}
-	//ImGui::BeginMenuBar();
-	//if (ImGui::BeginMenu("File"))
-	//{
-	//	if (ImGui::MenuItem("Open"))
-	//	{
 
-	//		particlesytem.LoadParticleProps("", particlepros);
-	//	}
-	//	if (ImGui::MenuItem("Save As"))
-	//	{
-	//		particlesytem.SaveParticleProps("", particlepros);
-	//	}
-	//	ImGui::EndMenu();
-	//}
-	//ImGui::EndMenuBar();
+
 	//ImGui::Text("fps: %f", mFPS);
 	if (ImGui::CollapsingHeader("Emitter Properties"), ImGuiTreeNodeFlags_DefaultOpen)
 	{
-		ImGui::DragFloat3("Emit Position Offset", (float*)&particlepros.mEmitPosOffset, 0.1f, 0.0f, 3.0f);
+		ImGui::RadioButton("Rectangle", &particlepros.EmitterShape, 0); ImGui::SameLine();
+		ImGui::RadioButton("Sphere", &particlepros.EmitterShape, 1);
+		ImGui::DragFloat3("Emit Position Offset", (float*)&particlepros.mEmitPosOffset, 0.1f, 0.0f, 10.0f);
 		ImGui::DragInt("Particle Number", (int*)&particlepros.number, 1, 0, 5000);
 		ImGui::DragFloat3("Emitter Position", (float*)&particlepros.position, 0.1f);
+		ImGui::Checkbox("Use Destination", &particlepros.UseDestination);
+		ImGui::DragFloat3("Destination", (float*)&particlepros.destination, 0.1f);
 	}
 	if (ImGui::CollapsingHeader("Particle Properties"), ImGuiTreeNodeFlags_DefaultOpen)
 	{
-		ImGui::DragFloat("Lifetime", (float*)&particlepros.lifetime, 0.01f, 0.0f, 1.0f);
-		ImGui::DragFloat("Size", (float*)&particlepros.size, 0.01f);
+		bool randomColor = false;
+		ImGui::DragFloat("Lifetime", (float*)&particlepros.lifetime, 0.1f, 0.0f, 10.0f);
+		ImGui::DragFloat("Size", (float*)&particlepros.size, 0.01f, 0.0f, 10.0f);
 		ImGui::DragFloat3("Velocity", (float*)&particlepros.velocity, 0.1f);
 		ImGui::DragFloat3("Velocity Variation", (float*)&particlepros.velocityvariation, 0.1f);
-		ImGui::ColorEdit4("StartColor ", (float*)&particlepros.startColor);
-		ImGui::ColorEdit4("EndColor ", (float*)&particlepros.endColor);
-
+		if (!ImGui::Checkbox("Use Random color", &particlepros.UseRandomColor))
+		{
+			ImGui::ColorEdit4("StartColor ", (float*)&particlepros.startColor);
+			ImGui::ColorEdit4("EndColor ", (float*)&particlepros.endColor);
+		}
 	}
 	ImGui::Separator();
 	ImGui::Text("Particle Texture");

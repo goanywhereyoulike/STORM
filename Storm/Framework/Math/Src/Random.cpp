@@ -68,3 +68,15 @@ Vector3 Random::OnUnitSphere()
 	);
 
 }
+
+Vector3 Random::OnSphere(Vector3& offsets)
+{
+	return Normalize(
+		{
+		UniformFloat(-offsets.x,offsets.x) + 0.001f,//ensure non-zero vector
+		UniformFloat(-offsets.y,offsets.y),
+		UniformFloat(-offsets.z,offsets.z)
+		}
+	)*0.1f;
+
+}

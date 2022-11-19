@@ -14,7 +14,7 @@
 
 struct ParticleProps
 {
-
+	std::string textureName;
 	Storm::Math::Vector3 position;
 	Storm::Math::Vector3 velocity;
 	Storm::Math::Vector3 velocityvariation{ 1.0f,1.0f,1.0f };
@@ -25,7 +25,10 @@ struct ParticleProps
 	Storm::Graphics::Color color = Storm::Graphics::Colors::White;
 	Storm::Graphics::Color startColor = Storm::Graphics::Colors::White;
 	Storm::Graphics::Color endColor = Storm::Graphics::Colors::White;
-
+	bool UseRandomColor = false;
+	bool UseDestination = false;
+	int EmitterShape = 0;
+	Storm::Math::Vector3 destination;
 
 };
 
@@ -35,12 +38,12 @@ namespace Storm::Graphics
 	class ParticleSystem
 	{
 	public:
-		void Initialize();
+		void Initialize(ParticleProps& particlepros);
 		void Render();
 		void Terminate();
 		void Emit(ParticleProps& particlepros);
 		void SetCamera(const Camera& camera);
-		void UpdateParticles(float deltaTime);
+		void UpdateParticles(float deltaTime, ParticleProps& particlepros);
 		const Storm::Graphics::Texture* GetParticleTexture();
 
 		void SaveParticleProps(std::filesystem::path filePath, ParticleProps ParticleProp);

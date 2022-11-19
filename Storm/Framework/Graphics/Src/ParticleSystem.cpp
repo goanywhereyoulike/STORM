@@ -11,14 +11,16 @@ using namespace Storm;
 using namespace Storm::Graphics;
 namespace rj = rapidjson;
 
-void Storm::Graphics::ParticleSystem::Initialize()
+void Storm::Graphics::ParticleSystem::Initialize(ParticleProps& particlepros)
 {
 	const size_t poolSize = 5000;
 	poolIndex = 0;
 
 	auto tm = TextureManager::Get();
-	particle.diffuseMapId = tm->LoadTexture("../../Assets/Images/fire.png");
+	particle.diffuseMapId = tm->LoadTexture(particlepros.textureName);
+	//"../../Assets/Images/fire.png"
 	particle.Initialize();
+	particlepool.clear();
 	particlepool.resize(poolSize, particle);
 	//mSimpleEffect.Initialize();
 	mParticleTexturingEffect.Initialize();
@@ -63,6 +65,7 @@ void Storm::Graphics::ParticleSystem::Render()
 void Storm::Graphics::ParticleSystem::Terminate()
 {
 	//mSimpleEffect.Terminate();
+	particle.diffuseMapId = 0;
 	mParticleTexturingEffect.Terminate();
 }
 
@@ -72,22 +75,70 @@ void Storm::Graphics::ParticleSystem::Emit(ParticleProps& particlepros)
 	Particle& particle = particlepool[poolIndex];
 	particle.IsActive = true;
 	particle.transform.position = particlepros.position;
-	particle.transform.position.x += Math::Random::UniformFloat(-particlepros.mEmitPosOffset.x, particlepros.mEmitPosOffset.x);
-	particle.transform.position.y += Math::Random::UniformFloat(-particlepros.mEmitPosOffset.y, particlepros.mEmitPosOffset.y);
-	particle.transform.position.z += Math::Random::UniformFloat(-particlepros.mEmitPosOffset.z, particlepros.mEmitPosOffset.z);
-	//particle.transform.rotation = Math::Quaternion::RotationEuler(Math::Vector3{ 0, Math::Random::UniformFloat(0.0f,2.0f) * Math::Constants::HalfPi,0 });
-	//	particle.useAdditiveBlend = true;
-	particle.velocity.x = particlepros.velocity.x * particlepros.velocityvariation.x;
-	particle.velocity.y = particlepros.velocity.y * particlepros.velocityvariation.y;
-	particle.velocity.z = particlepros.velocity.z * particlepros.velocityvariation.z;
+
+
+	if (particlepros.EmitterShape == 0)
+	{
+		particle.transform.position.x += Math::Random::UniformFloat(-particlepros.mEmitPosOffset.x, particlepros.mEmitPosOffset.x);
+		particle.transform.position.y += Math::Random::UniformFloat(-particlepros.mEmitPosOffset.y, particlepros.mEmitPosOffset.y);
+		particle.transform.position.z += Math::Random::UniformFloat(-particlepros.mEmitPosOffset.z, particlepros.mEmitPosOffset.z);
+		//particle.transform.rotation = Math::Quaternion::RotationEuler(Math::Vector3{ 0, Math::Random::UniformFloat(0.0f,2.0f) * Math::Constants::HalfPi,0 });
+		particle.useAdditiveBlend = true;
+		if (particlepros.UseDestination)
+		{
+			Math::Vector3 velocity = Math::Normalize(particlepros.destination - particle.transform.position);
+			particle.velocity.x = velocity.x * particlepros.velocityvariation.x;
+			particle.velocity.y = velocity.y * particlepros.velocityvariation.y;
+			particle.velocity.z = velocity.z * particlepros.velocityvariation.z;
+			particle.velocity += particlepros.velocity;
+		}
+		else
+		{
+			particle.velocity.x = particlepros.velocity.x * particlepros.velocityvariation.x;
+			particle.velocity.y = particlepros.velocity.y * particlepros.velocityvariation.y;
+			particle.velocity.z = particlepros.velocity.z * particlepros.velocityvariation.z;
+		}
+
+
+	}
+	else if (particlepros.EmitterShape == 1)
+	{
+		particle.transform.position += Math::Random::OnSphere(particlepros.mEmitPosOffset);
+		Math::Vector3 velocity = Math::Normalize(particle.transform.position - particlepros.position) * 0.01f;
+
+		particle.velocity.x = velocity.x * particlepros.velocityvariation.x;
+		particle.velocity.y = velocity.y * particlepros.velocityvariation.y;
+		particle.velocity.z = velocity.z * particlepros.velocityvariation.z;
+		particle.velocity += particlepros.velocity;
+	}
+
+
+	//particle.velocity.x = particlepros.velocity.x * particlepros.velocityvariation.x;
+	//particle.velocity.y = particlepros.velocity.y * particlepros.velocityvariation.y;
+	//particle.velocity.z = particlepros.velocity.z * particlepros.velocityvariation.z;
 	//particle.velocity += Storm::Math::Random::OnUnitSphere();
 	//particle.velocity.z += particlepros.velocityvariation.z * (generator() % 3 - 0.5f);
 
 	particle.lifeTime = particlepros.lifetime;
 	particle.lifeRemain = particlepros.lifetime;
 	particle.color = particlepros.color;
-	particle.startColor = particlepros.startColor;
-	particle.endColor = particlepros.endColor;
+	if (particlepros.UseRandomColor)
+	{
+		Color a = Colors::White;
+		a.r = Math::Random::UniformFloat(0.0f, 1.0f);
+		a.g = Math::Random::UniformFloat(0.0f, 1.0f);
+		a.b = Math::Random::UniformFloat(0.0f, 1.0f);
+		a.a = 1.0f;
+		particle.startColor = a;
+		particle.endColor = a;
+	}
+	else
+	{
+		particle.startColor = particlepros.startColor;
+		particle.endColor = particlepros.endColor;
+	}
+	//particle.startColor = particlepros.startColor;
+	//particle.endColor = particlepros.endColor;
 	//particle.color.a = particle.color.a * life;
 
 	particle.size = particlepros.size;
@@ -100,7 +151,7 @@ void Storm::Graphics::ParticleSystem::SetCamera(const Camera& camera)
 	mCamera = &camera;
 }
 
-void Storm::Graphics::ParticleSystem::UpdateParticles(float deltaTime)
+void Storm::Graphics::ParticleSystem::UpdateParticles(float deltaTime, ParticleProps& particlepros)
 {
 	for (auto& particle : particlepool)
 	{
@@ -116,6 +167,10 @@ void Storm::Graphics::ParticleSystem::UpdateParticles(float deltaTime)
 
 		particle.lifeRemain -= deltaTime;
 		particle.transform.position += particle.velocity * deltaTime;
+		if (particlepros.EmitterShape == 1)
+		{
+			particle.velocity += Math::Normalize(Math::TransformCoord(particle.velocity, Math::Matrix4::RotationY(1.0f))) * 0.03f;
+		}
 		//particle.transform.rotation = Math::Quaternion::RotationLook(Math::Normalize(mCamera->GetDirection())) * Math::Quaternion::RotationAxis(Math::Vector3::YAxis, 135.0f);// +Math::Quaternion::RotationEuler(Math::Vector3{ 0,0, Math::Constants::HalfPi });
 		//particle.meshBuffer.Update();
 
@@ -149,6 +204,20 @@ void Storm::Graphics::ParticleSystem::SaveParticleProps(std::filesystem::path fi
 	writer.Key("Emitter_Properties");
 	writer.StartObject();
 
+	writer.Key("TextureName");
+	writer.String(ParticleProp.textureName.c_str());
+
+	writer.Key("EmitterShape");
+	writer.Int(ParticleProp.EmitterShape);
+
+	writer.Key("UseDestination");
+	writer.Bool(ParticleProp.UseDestination);
+
+	writer.Key("Destination");
+	writer.StartArray();
+	writer.Double(ParticleProp.destination.x); writer.Double(ParticleProp.destination.y); writer.Double(ParticleProp.destination.z);
+	writer.EndArray();
+
 	writer.Key("EmitPosOffset");
 	writer.StartArray();
 	writer.Double(ParticleProp.mEmitPosOffset.x); writer.Double(ParticleProp.mEmitPosOffset.y); writer.Double(ParticleProp.mEmitPosOffset.z);
@@ -181,14 +250,17 @@ void Storm::Graphics::ParticleSystem::SaveParticleProps(std::filesystem::path fi
 	writer.Double(ParticleProp.velocityvariation.x); writer.Double(ParticleProp.velocityvariation.y); writer.Double(ParticleProp.velocityvariation.z);
 	writer.EndArray();
 
+	writer.Key("UseRandomColor");
+	writer.Bool(ParticleProp.UseRandomColor);
+
 	writer.Key("startColor");
 	writer.StartArray();
-	writer.Double(ParticleProp.startColor.a); writer.Double(ParticleProp.startColor.r); writer.Double(ParticleProp.startColor.g); writer.Double(ParticleProp.startColor.b);
+	writer.Double(ParticleProp.startColor.r); writer.Double(ParticleProp.startColor.g); writer.Double(ParticleProp.startColor.b); writer.Double(ParticleProp.startColor.a);
 	writer.EndArray();
 
 	writer.Key("endColor");
 	writer.StartArray();
-	writer.Double(ParticleProp.endColor.a); writer.Double(ParticleProp.endColor.r); writer.Double(ParticleProp.endColor.g); writer.Double(ParticleProp.endColor.b);
+	writer.Double(ParticleProp.endColor.r); writer.Double(ParticleProp.endColor.g); writer.Double(ParticleProp.endColor.b); writer.Double(ParticleProp.endColor.a);
 	writer.EndArray();
 	writer.EndObject();
 
@@ -217,6 +289,29 @@ void Storm::Graphics::ParticleSystem::LoadParticleProps(std::filesystem::path fi
 		const char* componentName = component.name.GetString();
 		if (strcmp(componentName, "Emitter_Properties") == 0)
 		{
+			if (component.value.HasMember("TextureName"))
+			{
+				const auto& TextureName = component.value["TextureName"].GetString();
+				ParticleProp.textureName = TextureName;
+			}
+			if (component.value.HasMember("EmitterShape"))
+			{
+				const auto& EmitterShape = component.value["EmitterShape"].GetFloat();
+				ParticleProp.EmitterShape = EmitterShape;
+			}
+			if (component.value.HasMember("UseDestination"))
+			{
+				const auto& UseDestination = component.value["UseDestination"].GetBool();
+				ParticleProp.UseDestination = UseDestination;
+			}
+			if (component.value.HasMember("Destination"))
+			{
+				const auto& Destination = component.value["Destination"].GetArray();
+				const float x = Destination[0].GetFloat();
+				const float y = Destination[1].GetFloat();
+				const float z = Destination[2].GetFloat();
+				ParticleProp.destination = Math::Vector3(x, y, z);
+			}
 			if (component.value.HasMember("EmitPosOffset"))
 			{
 				const auto& offsets = component.value["EmitPosOffset"].GetArray();
@@ -267,22 +362,27 @@ void Storm::Graphics::ParticleSystem::LoadParticleProps(std::filesystem::path fi
 				const float z = velocityvariation[2].GetFloat();
 				ParticleProp.velocityvariation = Math::Vector3(x, y, z);
 			}
+			if (component.value.HasMember("UseRandomColor"))
+			{
+				const auto& UseRandomColor = component.value["UseRandomColor"].GetBool();
+				ParticleProp.UseRandomColor = UseRandomColor;
+			}
 			if (component.value.HasMember("startColor"))
 			{
-				const auto& velocityvariation = component.value["startColor"].GetArray();
-				const float a = velocityvariation[0].GetFloat();
-				const float r = velocityvariation[1].GetFloat();
-				const float g = velocityvariation[2].GetFloat();
-				const float b = velocityvariation[2].GetFloat();
+				const auto& startColor = component.value["startColor"].GetArray();
+				const float r = startColor[0].GetFloat();
+				const float g = startColor[1].GetFloat();
+				const float b = startColor[2].GetFloat();
+				const float a = startColor[3].GetFloat();
 				ParticleProp.startColor = Math::Vector4(r, g, b, a);
 			}
 			if (component.value.HasMember("endColor"))
 			{
-				const auto& velocityvariation = component.value["endColor"].GetArray();
-				const float a = velocityvariation[0].GetFloat();
-				const float r = velocityvariation[1].GetFloat();
-				const float g = velocityvariation[2].GetFloat();
-				const float b = velocityvariation[2].GetFloat();
+				const auto& endColor = component.value["endColor"].GetArray();
+				const float r = endColor[0].GetFloat();
+				const float g = endColor[1].GetFloat();
+				const float b = endColor[2].GetFloat();
+				const float a = endColor[3].GetFloat();
 				ParticleProp.endColor = Math::Vector4(r, g, b, a);
 			}
 		}

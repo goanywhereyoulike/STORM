@@ -12,6 +12,8 @@ namespace Storm::Math::Random
 	Vector3 InsideUnitSphere();
 	Vector3 OnUnitSphere();
 
+	Vector3 OnSphere(Vector3& offsets);
+
 	//Vector2 RandomVector2(const Vector2& min, const Vector2& max);
 	//Vector2 RandomUnitCircle();
 
