@@ -50,7 +50,7 @@ void RenderService::Initialize()
 	mShadowEffect.SetDirectionalLight(mDirectionLight);
 	mShadowEffect.SetSize(200.0f);
 
-	LoadSkydome("../../Assets/Images/skydome1.jpg");
+	//LoadSkydome("../../Assets/Images/skydome1.jpg");
 
 }
 

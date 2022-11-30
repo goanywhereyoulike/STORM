@@ -9,21 +9,12 @@ public:
 	void Render() override;
 	void DebugUI() override;
 private:
-	//struct Vertex
-	//{
-	//	Storm::Math::Vector3 position;
-	//	Storm::Graphics::Color color;
-
-	//};
 
 	struct TransformData
 	{
 		Storm::Math::Matrix4 wvp;
-
-
 	};
 
-	//ID3D11Buffer* mConstantBuffer = nullptr;
 	Storm::Graphics::Camera mCamera;
 	Storm::Graphics::MeshPX mCubeMesh;
 	Storm::Graphics::MeshPX mSkyboxMesh;

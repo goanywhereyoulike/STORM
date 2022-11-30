@@ -25,7 +25,7 @@ private:
 	Storm::Graphics::Model model;
 	Storm::Graphics::RenderGroup mHuman;
 	Storm::Graphics::RenderObject mGround;
-	Storm::Graphics::RenderObject Cloth;
+	//Storm::Graphics::RenderObject Cloth;
 
 	Storm::Graphics::RasterizerState mCullNone;
 	Storm::Graphics::RasterizerState mWireframe;

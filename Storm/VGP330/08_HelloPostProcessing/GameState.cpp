@@ -36,9 +36,9 @@ void GameState::Initialize()
 	mBlockGlitchEffect.SetTexture(&mBaseRenderTarget, 0);
 	mBlockGlitchEffect.SetTexture(&mNoPostProcessEffectRenderTarget, 1);
 	//mEarth.diffuseMapId = tm->LoadTexture("../../Assets/Images/earth.jpg");
-//mEarth.specularMapId = tm->LoadTexture("../../Assets/Images/earth_spec.jpg");
-//mEarth.displacementMapId = tm->LoadTexture("../../Assets/Images/earth_bump.jpg");
-//mEarth.normalMapId = tm->LoadTexture("../../Assets/Images/earth_normal.jpg");
+	//mEarth.specularMapId = tm->LoadTexture("../../Assets/Images/earth_spec.jpg");
+	//mEarth.displacementMapId = tm->LoadTexture("../../Assets/Images/earth_bump.jpg");
+	//mEarth.normalMapId = tm->LoadTexture("../../Assets/Images/earth_normal.jpg");
 	auto tm = TextureManager::Get();
 
 	mEarth.material.ambient = { 1.0f,1.0f,1.0f,1.0f };

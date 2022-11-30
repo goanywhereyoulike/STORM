@@ -201,7 +201,7 @@ void GameState::DebugUI()
 				mPhysicsWorld.AddConstraint<Physics::Spring>(particles[r * columns + c], particles[r * columns + c + 1], 0.2f);
 				if (r < rows - 1)
 				{
-					mPhysicsWorld.AddConstraint<Physics::Spring>(particles[r * columns + c], particles[(r + 1) * columns + c + 1], 0.283f);
+					mPhysicsWorld.AddConstraint<Physics::Spring>(particles[r * columns + c], particles[(static_cast<size_t>(r) + 1) * columns + c + 1], 0.283f);
 				}
 			}
 		}
@@ -518,8 +518,8 @@ void GameState::DebugUI()
 		mTetrahedrons.clear();
 
 
-		float X = 0.5;
-		float Z = 0.8;
+		float X = 0.5f;
+		float Z = 0.8f;
 		static Vector3 vdata[12] = {
 		   {-X, 0.0, Z}, {X, 0.0, Z}, {-X, 0.0, -Z}, {X, 0.0, -Z},
 		   {0.0, Z, X}, {0.0, Z, -X}, {0.0, -Z, X}, {0.0, -Z, -X},
@@ -574,7 +574,6 @@ void GameState::subdivide(Storm::Math::Vector3& v1, Storm::Math::Vector3& v2, St
 	Vector3 v12, v23, v31;
 	//Vector3 center= { 0.0f,8.0f,0.0f };
 
-	int i;
 	if (0 == depth)
 	{
 		int index1, index2, index3 = -1;
@@ -606,7 +605,7 @@ void GameState::subdivide(Storm::Math::Vector3& v1, Storm::Math::Vector3& v2, St
 			p1->SetPosition(v1);
 			p1->radius = 0.01f;
 			mBalls.push_back(p1);
-			index1 = mBalls.size() - 1;
+			index1 = static_cast<int>(mBalls.size() - 1);
 		}
 		if (p2 == nullptr)
 		{
@@ -614,7 +613,7 @@ void GameState::subdivide(Storm::Math::Vector3& v1, Storm::Math::Vector3& v2, St
 			p2->SetPosition(v2);
 			p2->radius = 0.01f;
 			mBalls.push_back(p2);
-			index2 = mBalls.size() - 1;
+			index2 = static_cast<int>(mBalls.size() - 1);
 		}
 		if (p3 == nullptr)
 		{
@@ -622,7 +621,7 @@ void GameState::subdivide(Storm::Math::Vector3& v1, Storm::Math::Vector3& v2, St
 			p3->SetPosition(v3);
 			p3->radius = 0.01f;
 			mBalls.push_back(p3);
-			index3 = mBalls.size() - 1;
+			index3 = static_cast<int>(mBalls.size() - 1);
 		}
 
 		indices.push_back(Vector3{ (float)index1,(float)index2,(float)index3 });

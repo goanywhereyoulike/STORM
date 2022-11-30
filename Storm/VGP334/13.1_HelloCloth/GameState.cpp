@@ -49,13 +49,13 @@ void GameState::Initialize()
 
 	mMesh = MeshBuilder::CreatePlane(10, 10, 0.2f, 1.0f);
 
-	Cloth.material.ambient = { 1.0f,1.0f,1.0f,1.0f };
-	Cloth.material.diffuse = { 0.75f,0.75f,0.75f,1.0f };
-	Cloth.material.specular = { 1.0f,1.0f,1.0f,1.0f };
-	Cloth.material.power = 10.0f;
-	Cloth.diffuseMapId= tm->LoadTexture("../../Assets/Images/ground.jpg");
-	//Cloth.diffuseMap.Initialize("../../Assets/Images/space.jpg"); 
-	Cloth.meshBuffer.Initialize(nullptr,sizeof(mMesh.vertices),mMesh.vertices.size(),true);
+	//Cloth.material.ambient = { 1.0f,1.0f,1.0f,1.0f };
+	//Cloth.material.diffuse = { 0.75f,0.75f,0.75f,1.0f };
+	//Cloth.material.specular = { 1.0f,1.0f,1.0f,1.0f };
+	//Cloth.material.power = 10.0f;
+	//Cloth.diffuseMapId= tm->LoadTexture("../../Assets/Images/ground.jpg");
+	////Cloth.diffuseMap.Initialize("../../Assets/Images/space.jpg"); 
+	//Cloth.meshBuffer.Initialize(nullptr,static_cast<uint32_t>(sizeof(mMesh.vertices)), static_cast<uint32_t>(mMesh.vertices.size()),true);
 
 	mCullNone.Initialize(RasterizerState::CullMode::None, RasterizerState::FillMode::Solid);
 	mWireframe.Initialize(RasterizerState::CullMode::Back, RasterizerState::FillMode::Wireframe);
@@ -65,7 +65,7 @@ void GameState::Initialize()
 
 void GameState::Terminate()
 {
-	Cloth.Terminate();
+	//Cloth.Terminate();
 	mWireframe.Terminate();
 	mCullNone.Terminate(); 
 	mGround.Terminate();
@@ -109,7 +109,7 @@ void GameState::Update(float deltaTime)
 	mFPS = 1.0f / deltaTime;
 	mPhysicsWorld.Update(deltaTime * speed);
 
-	Cloth.meshBuffer.Update(mMesh.vertices.data(), mMesh.vertices.size());
+	//Cloth.meshBuffer.Update(mMesh.vertices.data(), static_cast<uint32_t>(mMesh.vertices.size()));
 
 }
 
@@ -121,7 +121,7 @@ void GameState::Render()
 	SimpleDraw::Render(mCamera);
 	mStandardEffect.Begin();
 	mStandardEffect.Render(mGround);
-	mStandardEffect.Render(Cloth);
+	//mStandardEffect.Render(Cloth);
 	mStandardEffect.End();
 
 }
@@ -134,8 +134,8 @@ void GameState::DebugUI()
 	if (ImGui::Button("Cloth!"))
 	{
 		mPhysicsWorld.Clear();
-		const size_t rows = 10;
-		const size_t columns = 10;
+		const size_t rows = 20;
+		const size_t columns = 20;
 		std::vector<Physics::Particle*> particles;
 		for (int i = 0; i < rows; ++i)
 		{
@@ -160,7 +160,7 @@ void GameState::DebugUI()
 				mPhysicsWorld.AddConstraint<Physics::Spring>(particles[r * columns + c], particles[r * columns + c + 1], 0.2f);
 				if (r < rows - 1)
 				{
-					mPhysicsWorld.AddConstraint<Physics::Spring>(particles[r * columns + c], particles[(r + 1) * columns + c + 1], 0.283f);
+					mPhysicsWorld.AddConstraint<Physics::Spring>(particles[r * columns + c], particles[(static_cast<size_t>(r) + 1) * columns + c + 1], 0.283f);
 				}
 			}
 		}
